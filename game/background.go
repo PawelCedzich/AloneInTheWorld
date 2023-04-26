@@ -20,3 +20,5 @@ func (b *Background) Draw(canvas *Canvas) {
 	b.RectObject.Draw(canvas)
 	canvas.SetTransformation(savedMatrix)
 }
+
+func (s *Background) Layout(_, _ float64) {}

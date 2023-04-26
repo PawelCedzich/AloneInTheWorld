@@ -8,16 +8,8 @@ import (
 type LevelComponent rune
 
 const (
-	LevelSpace    LevelComponent = ' '
-	LevelGround   LevelComponent = 'X'
-	LevelPlatform LevelComponent = 'P'
-	LevelPlayer   LevelComponent = '*'
-	LevelGoal     LevelComponent = 'M'
-	LevelRaccoon  LevelComponent = 'R'
-	LevelMono     LevelComponent = 'B'
-	LevelVampire  LevelComponent = 'V'
-	LevelGold     LevelComponent = 'G'
-	LevelOpossum  LevelComponent = 'O'
+	LevelSpace  LevelComponent = ' '
+	LevelGround LevelComponent = 'X'
 )
 
 type Level struct {
@@ -39,7 +31,6 @@ func ParseLevel(str string) (*Level, error) {
 
 	raster := make([][]LevelComponent, len(lines), len(lines))
 
-	hasPlayer := false
 	for lineNo, line := range lines {
 		if len(line) != width {
 			return nil, fmt.Errorf("the width of the lvl must be same, the line %d has a wdith of %d expected %d", lineNo, len(line), width)
@@ -48,38 +39,14 @@ func ParseLevel(str string) (*Level, error) {
 		raster[lineNo] = make([]LevelComponent, width, width)
 		for runeNo, char := range line {
 			switch LevelComponent(char) {
-			case LevelPlayer:
-				if hasPlayer {
-					return nil, fmt.Errorf("second player declaration in %d line and %d column", lineNo, runeNo)
-				}
-				hasPlayer = true
-				fallthrough
 			case LevelGround:
-				fallthrough
-			case LevelGold:
-				fallthrough
+				raster[lineNo][runeNo] = LevelComponent(char)
 			case LevelSpace:
-				fallthrough
-			case LevelRaccoon:
-				fallthrough
-			case LevelMono:
-				fallthrough
-			case LevelVampire:
-				fallthrough
-			case LevelGoal:
-				fallthrough
-			case LevelOpossum:
-				fallthrough
-			case LevelPlatform:
 				raster[lineNo][runeNo] = LevelComponent(char)
 			default:
-				return nil, fmt.Errorf("invalid level component in %d line %d column %s", lineNo, runeNo, string(char))
+				//return nil, fmt.Errorf("invalid level component in %d line %d column %s", lineNo, runeNo, string(char))
 			}
 		}
-	}
-
-	if !hasPlayer {
-		return nil, fmt.Errorf("level has no declared player need at least one")
 	}
 
 	return &Level{raster: raster}, nil
@@ -87,7 +54,8 @@ func ParseLevel(str string) (*Level, error) {
 
 func (l *Level) Build(g *Game) []Renderable {
 
-	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(Blueshroom))))
+	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundImageT))))
+	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundTownT))))
 
 	for y, line := range l.raster {
 		for x, component := range line {
@@ -98,29 +66,22 @@ func (l *Level) Build(g *Game) []Renderable {
 			cell := Rect{pos.x, pos.y, pos.x + 100, pos.y + 100}
 			switch component {
 			case LevelGround:
-				tex := GroundFill
+				tex := GroundFillT
 				if l.Get(x, y-1) != LevelGround {
-					tex = GroundMid
+					tex = GroundMidT
 					if l.Get(x, y+1) != LevelGround {
 						if l.Get(x-1, y) == LevelSpace && l.Get(x+1, y) == LevelGround {
-							tex = GroundLeft
+							tex = GroundLeftT
 						} else if l.Get(x+1, y) == LevelSpace && l.Get(x-1, y) == LevelGround {
-							tex = GroundRight
+							tex = GroundRightT
 						}
 					}
 				}
 
 				ground := NewGround(NewDrawableTexture(g.texture.LoadTexture(tex)), cell, true, g.engine.Scale())
 				l.res = append(l.res, ground)
-			case LevelSpace:
-				//no-op
-			case LevelPlatform:
-				platformCell := cell
-				platformCell.Bottom = platformCell.Top + platformCell.height()/2
-				platform := NewGround(NewDrawableTexture(g.texture.LoadTexture(Platform)), platformCell, false, g.engine.Scale())
-				l.res = append(l.res, platform)
 			default:
-				panic(fmt.Errorf("illegal state"))
+				//panic(fmt.Errorf("illegal state"))
 			}
 		}
 	}

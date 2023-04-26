@@ -3,7 +3,7 @@ package game
 import (
 	"fmt"
 
-	"./assets"
+	"github.com/PawelCedzich/AloneInTheWorld/AloneInTheWorld/assets"
 )
 
 type Game struct {

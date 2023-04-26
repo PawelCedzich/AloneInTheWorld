@@ -58,3 +58,46 @@ func (r *RenderObject) Layout(w, h float64) {
 }
 
 // =====================================================================================================================
+
+type RectObject struct {
+	texture Drawable
+	area    Rect
+}
+
+func NewRectObject(tex Drawable, area Rect) *RectObject {
+	return &RectObject{
+		texture: tex,
+		area:    area,
+	}
+}
+
+func (r *RectObject) Draw(dst *Canvas) {
+	texW, texH := r.texture.Size()
+	position := Vec{
+		x: r.area.Left,
+		y: r.area.Top,
+	}
+	scale := Vec{
+		x: r.area.width() / texW,
+		y: r.area.height() / texH,
+	}
+
+	op := &ebiten.DrawImageOptions{}
+
+	op.GeoM.Scale(scale.x, scale.y)
+	op.GeoM.Translate(position.x, position.y)
+
+	dst.Save()
+	dst.Concat(op.GeoM)
+	r.texture.Draw(dst)
+
+	dst.Restore()
+}
+
+func (r *RectObject) BoundingBox() Rect {
+	return r.area
+}
+
+func (r *RectObject) Layout(sw, sh float64) {
+	r.texture.Update()
+}

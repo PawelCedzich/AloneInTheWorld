@@ -77,7 +77,3 @@ func (c *Canvas) DrawRect(r Rect, color color.RGBA) {
 	r = r.Apply(c.Transformation())
 	ebitenutil.DrawRect(c.dst, r.Left, r.Top, r.width(), r.height(), color)
 }
-
-func (c *Canvas) SetColor(color color.Color) {
-	c.stack[len(c.stack)-1].color = color
-}

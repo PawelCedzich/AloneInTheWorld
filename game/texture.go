@@ -13,41 +13,12 @@ import (
 type Texture int
 
 const (
-	BushTopLeft Texture = iota + 1
-	BushTopRight
-	BushBottomLeft
-	BushBottomRight
-	ProfessorHead
-	ProfessorBody
-	CloudONe
-	CloudTwo
-	CloudThree
-	CloudFour
-	Logo
-	Raccoon
-	Morty
-	Field
-	GroundLeft
-	GroundFill
-	GroundMid
-	GroundRight
-	Platform
-	Blueshroom
-	MortyVanilla
-	MortyJumping
-	MortyMeditating
-	MortyWalking
-	MortyJoyFul
-	MortySadFul
-	Nut
-	MortyAlbino
-	MortySadMono
-	MortyOpossum
-	MortyRaccoonWalking
-	Gold1
-	Gold2
-	Gold3
-	Gold4
+	GroundLeftT Texture = iota + 1
+	GroundFillT
+	GroundMidT
+	GroundRightT
+	BackgroundImageT
+	BackgroundTownT
 )
 
 type TextureManager struct {
@@ -69,7 +40,7 @@ func NewTextureManager(resources map[Texture][]byte) (*TextureManager, error) {
 func (t *TextureManager) LoadTexture(id Texture) *ebiten.Image {
 	tex, ok := t.textures[id]
 	if !ok {
-		panic("Texture id not defined ")
+		panic(fmt.Sprintf("Texture id not defined %d ", id))
 	}
 	return tex
 }
