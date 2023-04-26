@@ -61,10 +61,10 @@ func (l *Level) Build(g *Game) []Renderable {
 	for y, line := range l.raster {
 		for x, component := range line {
 			pos := Vec{
-				x: float64(x) * 100,
-				y: float64(y) * 100,
+				x: float64(x) * 50,
+				y: float64(y) * 50,
 			}
-			cell := Rect{pos.x, pos.y, pos.x + 100, pos.y + 100}
+			cell := Rect{pos.x, pos.y, pos.x + 50, pos.y + 50}
 			switch component {
 			case LevelGround:
 				tex := GroundFillT
