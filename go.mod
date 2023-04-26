@@ -1,4 +1,4 @@
-module AloneInTheWorld
+module github.com/PawelCedzich/AloneInTheWorld
 
 go 1.20
 

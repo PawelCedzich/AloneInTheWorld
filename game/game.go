@@ -17,13 +17,7 @@ func NewGame(e *Engine, tex *TextureManager) *Game {
 		tex,
 	}
 
-	e.mainScreen = func() {
-		g.LoadStartScreen()
-	}
-
-	e.level1 = func() {
-		g.LoadLevel1()
-	}
+	g.LoadLevel1()
 
 	return g
 }
