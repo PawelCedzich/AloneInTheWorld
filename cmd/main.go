@@ -21,12 +21,13 @@ func realMain() error {
 	flag.Parse()
 
 	texture, err := game.NewTextureManager(map[game.Texture][]byte{
-		game.GroundLeftT:      assets.GroundLeft,
-		game.GroundFillT:      assets.GroundFill,
-		game.GroundMidT:       assets.GroundMid,
-		game.GroundRightT:     assets.GroundRight,
-		game.BackgroundImageT: assets.BackgroundImage,
-		game.BackgroundTownT:  assets.BackgroundTown,
+		game.GroundLeftT:          assets.GroundLeft,
+		game.GroundFillT:          assets.GroundFill,
+		game.GroundMidT:           assets.GroundMid,
+		game.GroundRightT:         assets.GroundRight,
+		game.BackgroundImageT:     assets.BackgroundImage,
+		game.BackgroundTownT:      assets.BackgroundTown,
+		game.BackgroundTownFrontT: assets.BackgroundTownFront,
 	})
 	if err != nil {
 		panic(err)

@@ -34,7 +34,7 @@ func (cfg *Config) Reset() {
 	cfg.Width = 800
 	cfg.Height = 600
 	cfg.Scale = 0
-	cfg.Fullscreen = false
+	cfg.Fullscreen = true
 }
 
 func (cfg *Config) Configure(flags *flag.FlagSet) {

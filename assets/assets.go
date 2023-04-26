@@ -24,3 +24,6 @@ var BackgroundImage []byte
 
 //go:embed BackgroundTown.png
 var BackgroundTown []byte
+
+//go:embed BackgroundTownFront.png
+var BackgroundTownFrotn []byte
