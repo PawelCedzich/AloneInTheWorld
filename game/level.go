@@ -55,6 +55,7 @@ func ParseLevel(str string) (*Level, error) {
 func (l *Level) Build(g *Game) []Renderable {
 
 	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundImageT))))
+	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundTownFrontT))))
 	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundTownT))))
 
 	for y, line := range l.raster {
