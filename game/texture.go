@@ -20,6 +20,7 @@ const (
 	BackgroundImageT
 	BackgroundTownT
 	BackgroundTownFrontT
+	CharacterT
 )
 
 type TextureManager struct {

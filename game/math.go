@@ -34,9 +34,23 @@ func (r Rect) Scale(v float64) Rect {
 	}
 }
 
+func (r Rect) Offset(x, y float64) Rect {
+	return Rect{
+		Left:   r.Left + x,
+		Top:    r.Top + y,
+		Right:  r.Right + x,
+		Bottom: r.Bottom + y,
+	}
+}
+
 func (r Rect) Apply(m ebiten.GeoM) Rect {
 	var t Rect
 	t.Left, t.Top = m.Apply(r.Left, r.Top)
 	t.Right, t.Bottom = m.Apply(r.Right, r.Bottom)
 	return t
+}
+
+func (r Rect) Overlaps(box Rect) bool {
+
+	return r.Left < box.Right && r.Right > box.Left && r.Top < box.Bottom && r.Bottom >= box.Top
 }

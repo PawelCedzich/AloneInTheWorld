@@ -10,16 +10,18 @@ type LevelComponent rune
 const (
 	LevelSpace  LevelComponent = ' '
 	LevelGround LevelComponent = 'X'
+	LevelPlayer LevelComponent = 'P'
 )
 
 type Level struct {
 	raster [][]LevelComponent
 	res    []Renderable
+	player *Player
 }
 
 func ParseLevel(str string) (*Level, error) {
-	lines := strings.Split(str, "\n")
 
+	lines := strings.Split(str, "\n")
 	if len(lines) < 2 {
 		return nil, fmt.Errorf("level must have at least 2 lines %d ", len(lines))
 	}
@@ -31,6 +33,7 @@ func ParseLevel(str string) (*Level, error) {
 
 	raster := make([][]LevelComponent, len(lines), len(lines))
 
+	hasPlayer := false
 	for lineNo, line := range lines {
 		if len(line) != width {
 			return nil, fmt.Errorf("the width of the lvl must be same, the line %d has a wdith of %d expected %d", lineNo, len(line), width)
@@ -39,12 +42,16 @@ func ParseLevel(str string) (*Level, error) {
 		raster[lineNo] = make([]LevelComponent, width, width)
 		for runeNo, char := range line {
 			switch LevelComponent(char) {
+			case LevelPlayer:
+				if hasPlayer {
+					return nil, fmt.Errorf("second player declaration in %d line and %d column", lineNo, runeNo)
+				}
+				hasPlayer = true
+				fallthrough
 			case LevelGround:
-				raster[lineNo][runeNo] = LevelComponent(char)
+				fallthrough
 			case LevelSpace:
 				raster[lineNo][runeNo] = LevelComponent(char)
-			default:
-				//return nil, fmt.Errorf("invalid level component in %d line %d column %s", lineNo, runeNo, string(char))
 			}
 		}
 	}
@@ -66,6 +73,9 @@ func (l *Level) Build(g *Game) []Renderable {
 			}
 			cell := Rect{pos.x, pos.y, pos.x + 50, pos.y + 50}
 			switch component {
+			case LevelPlayer:
+				l.player = NewPlayer(NewDrawableTexture(g.texture.LoadTexture(CharacterT)), cell, g.engine.Scale())
+
 			case LevelGround:
 				tex := GroundFillT
 				if l.Get(x, y-1) != LevelGround {
@@ -81,11 +91,17 @@ func (l *Level) Build(g *Game) []Renderable {
 
 				ground := NewGround(NewDrawableTexture(g.texture.LoadTexture(tex)), cell, true, g.engine.Scale())
 				l.res = append(l.res, ground)
-			default:
-				//panic(fmt.Errorf("illegal state"))
 			}
 		}
 	}
+
+	for _, r := range l.res {
+		if ground, ok := r.(*Ground); ok {
+			l.player.AppendGround(ground)
+		}
+	}
+
+	l.res = append(l.res, l.player)
 
 	return l.res
 }

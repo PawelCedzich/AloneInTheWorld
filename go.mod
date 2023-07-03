@@ -3,6 +3,7 @@ module github.com/PawelCedzich/AloneInTheWorld/AloneInTheWorld
 go 1.20
 
 require (
+	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/hajimehoshi/ebiten/v2 v2.5.3
 	golang.org/x/image v0.7.0
 )
