@@ -50,13 +50,10 @@ type Engine struct {
 	renderables []Renderable
 	Cfg         Config
 	windowSize  Vec
-	stage       float64
-	Close       float64
-	stageBlock  bool
 }
 
 func NewEngine(cfg Config) *Engine {
-	e := &Engine{Cfg: cfg, stage: 0, Close: 0}
+	e := &Engine{Cfg: cfg}
 	return e
 }
 
@@ -105,7 +102,7 @@ func (e *Engine) Start() error {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowSize(e.Cfg.Width, e.Cfg.Height)
 	ebiten.SetFullscreen(e.Cfg.Fullscreen)
-	ebiten.SetWindowTitle("Morty game_v2")
+	ebiten.SetWindowTitle("Alone In The World")
 	if err := ebiten.RunGame(e); err != nil {
 		return fmt.Errorf("cant start game %w", err)
 	}

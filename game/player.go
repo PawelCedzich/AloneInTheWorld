@@ -116,7 +116,7 @@ func (p *Player) Draw(dst *Canvas) {
 	p.RectObject.Draw(dst)
 
 	//hitbox debug
-	//p.BoundingBox().Draw(dst)
+	p.BoundingBox().Draw(dst)
 
 	//debug sprite
 	//p.RectObject.BoundingBox().Draw(dst)

@@ -39,7 +39,8 @@ func (c *Canvas) Translate(x, y float64) {
 }
 
 func (c *Canvas) Size() (float64, float64) {
-	x, y := c.dst.Size()
+	x := c.dst.Bounds().Dx()
+	y := c.dst.Bounds().Dy()
 	return float64(x), float64(y)
 
 }

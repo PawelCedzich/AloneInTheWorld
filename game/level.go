@@ -77,18 +77,18 @@ func (l *Level) Build(g *Game) []Renderable {
 				l.player = NewPlayer(NewDrawableTexture(g.texture.LoadTexture(CharacterT)), cell, g.engine.Scale())
 
 			case LevelGround:
-				tex := GroundFillT
-				if l.Get(x, y-1) != LevelGround {
-					tex = GroundMidT
-					if l.Get(x, y+1) != LevelGround {
-						if l.Get(x-1, y) == LevelSpace && l.Get(x+1, y) == LevelGround {
-							tex = GroundLeftT
-						} else if l.Get(x+1, y) == LevelSpace && l.Get(x-1, y) == LevelGround {
-							tex = GroundRightT
-						}
-					}
+				tex := GroundMidT
+				if l.Get(x, y-1) == LevelGround {
+					tex = GroundFillT
 				}
 
+				if l.Get(x, y+1) != LevelGround {
+					if l.Get(x-1, y) == LevelSpace && l.Get(x+1, y) == LevelGround {
+						tex = GroundLeftT
+					} else if l.Get(x+1, y) == LevelSpace && l.Get(x-1, y) == LevelGround {
+						tex = GroundRightT
+					}
+				}
 				ground := NewGround(NewDrawableTexture(g.texture.LoadTexture(tex)), cell, true, g.engine.Scale())
 				l.res = append(l.res, ground)
 			}
