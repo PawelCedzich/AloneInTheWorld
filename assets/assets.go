@@ -13,6 +13,12 @@ var GroundLeft []byte
 //go:embed TileFill.png
 var GroundFill []byte
 
+//go:embed TileFillDeep.png
+var GroundFillDeep []byte
+
+//go:embed TileFillDeeper.png
+var GroundFillDeeper []byte
+
 //go:embed TileMiddle.png
 var GroundMid []byte
 

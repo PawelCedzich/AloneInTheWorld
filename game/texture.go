@@ -15,6 +15,8 @@ type Texture int
 const (
 	GroundLeftT Texture = iota + 1
 	GroundFillT
+	GroundFillDeepT
+	GroundFillDeeperT
 	GroundMidT
 	GroundRightT
 	BackgroundImageT

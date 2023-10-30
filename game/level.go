@@ -78,17 +78,30 @@ func (l *Level) Build(g *Game) []Renderable {
 
 			case LevelGround:
 				tex := GroundMidT
-				if l.Get(x, y-1) == LevelGround {
-					tex = GroundFillT
+				aboveGroundCount := 0
+
+				for i := 1; i <= 3; i++ {
+					if l.Get(x, y-i) == LevelGround {
+						aboveGroundCount++
+					} else if l.Get(x, y-i) == LevelSpace {
+						break
+					}
 				}
 
-				if l.Get(x, y+1) != LevelGround {
+				if aboveGroundCount == 3 {
+					tex = GroundFillDeeperT
+				} else if aboveGroundCount == 2 {
+					tex = GroundFillDeepT
+				} else if aboveGroundCount == 1 {
+					tex = GroundFillT
+				} else {
 					if l.Get(x-1, y) == LevelSpace && l.Get(x+1, y) == LevelGround {
 						tex = GroundLeftT
 					} else if l.Get(x+1, y) == LevelSpace && l.Get(x-1, y) == LevelGround {
 						tex = GroundRightT
 					}
 				}
+
 				ground := NewGround(NewDrawableTexture(g.texture.LoadTexture(tex)), cell, true, g.engine.Scale())
 				l.res = append(l.res, ground)
 			}

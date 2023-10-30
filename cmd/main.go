@@ -23,6 +23,8 @@ func realMain() error {
 	texture, err := game.NewTextureManager(map[game.Texture][]byte{
 		game.GroundLeftT:          assets.GroundLeft,
 		game.GroundFillT:          assets.GroundFill,
+		game.GroundFillDeepT:      assets.GroundFillDeep,
+		game.GroundFillDeeperT:    assets.GroundFillDeeper,
 		game.GroundMidT:           assets.GroundMid,
 		game.GroundRightT:         assets.GroundRight,
 		game.BackgroundImageT:     assets.BackgroundImage,
