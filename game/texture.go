@@ -13,12 +13,21 @@ import (
 type Texture int
 
 const (
-	GroundLeftT Texture = iota + 1
-	GroundFillT
-	GroundFillDeepT
-	GroundFillDeeperT
-	GroundMidT
+	GroundMidT Texture = iota + 1
+	GroundLeftT
 	GroundRightT
+	GroundSingleT
+	GroundFillT
+	GroundFillSingleT
+	GroundFillLeftT
+	GroundFillRightT
+	GroundFillDeepT
+	GroundFillDeepSingleT
+	GroundFillDeepLeftT
+	GroundFillDeepRightT
+	GroundFillDeeperT
+	GroundFillDeeper2T
+	GroundFillDeeper3T
 	BackgroundImageT
 	BackgroundTownT
 	BackgroundTownFrontT

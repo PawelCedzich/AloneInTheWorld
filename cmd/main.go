@@ -21,16 +21,25 @@ func realMain() error {
 	flag.Parse()
 
 	texture, err := game.NewTextureManager(map[game.Texture][]byte{
-		game.GroundLeftT:          assets.GroundLeft,
-		game.GroundFillT:          assets.GroundFill,
-		game.GroundFillDeepT:      assets.GroundFillDeep,
-		game.GroundFillDeeperT:    assets.GroundFillDeeper,
-		game.GroundMidT:           assets.GroundMid,
-		game.GroundRightT:         assets.GroundRight,
-		game.BackgroundImageT:     assets.BackgroundImage,
-		game.BackgroundTownT:      assets.BackgroundTown,
-		game.BackgroundTownFrontT: assets.BackgroundTownFront,
-		game.CharacterT:           assets.Character,
+		game.GroundMidT:            assets.GroundMid,
+		game.GroundSingleT:         assets.GroundSingle,
+		game.GroundRightT:          assets.GroundRight,
+		game.GroundLeftT:           assets.GroundLeft,
+		game.GroundFillT:           assets.GroundFill,
+		game.GroundFillSingleT:     assets.GroundFillSingle,
+		game.GroundFillLeftT:       assets.GroundFillLeft,
+		game.GroundFillRightT:      assets.GroundFillRight,
+		game.GroundFillDeepT:       assets.GroundFillDeep,
+		game.GroundFillDeepSingleT: assets.GroundFillDeepSingle,
+		game.GroundFillDeepLeftT:   assets.GroundFillDeepLeft,
+		game.GroundFillDeepRightT:  assets.GroundFillDeepRight,
+		game.GroundFillDeeperT:     assets.GroundFillDeeper,
+		game.GroundFillDeeper2T:    assets.GroundFillDeeper2,
+		game.GroundFillDeeper3T:    assets.GroundFillDeeper3,
+		game.BackgroundImageT:      assets.BackgroundImage,
+		game.BackgroundTownT:       assets.BackgroundTown,
+		game.BackgroundTownFrontT:  assets.BackgroundTownFront,
+		game.CharacterT:            assets.Character,
 	})
 	if err != nil {
 		panic(err)

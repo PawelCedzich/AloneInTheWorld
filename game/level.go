@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 )
 
@@ -77,7 +78,8 @@ func (l *Level) Build(g *Game) []Renderable {
 				l.player = NewPlayer(NewDrawableTexture(g.texture.LoadTexture(CharacterT)), cell, g.engine.Scale())
 
 			case LevelGround:
-				tex := GroundMidT
+				var tex Texture
+				var texList []Texture
 				aboveGroundCount := 0
 
 				for i := 1; i <= 3; i++ {
@@ -89,17 +91,24 @@ func (l *Level) Build(g *Game) []Renderable {
 				}
 
 				if aboveGroundCount == 3 {
-					tex = GroundFillDeeperT
-				} else if aboveGroundCount == 2 {
-					tex = GroundFillDeepT
-				} else if aboveGroundCount == 1 {
-					tex = GroundFillT
-				} else {
-					if l.Get(x-1, y) == LevelSpace && l.Get(x+1, y) == LevelGround {
-						tex = GroundLeftT
-					} else if l.Get(x+1, y) == LevelSpace && l.Get(x-1, y) == LevelGround {
-						tex = GroundRightT
+					randomNumber := rand.Intn(30) + 1
+					if randomNumber >= 1 && randomNumber <= 19 {
+						tex = GroundFillDeeperT
+					} else if randomNumber >= 20 && randomNumber <= 27 {
+						tex = GroundFillDeeper2T
+					} else if randomNumber >= 28 {
+						tex = GroundFillDeeper3T
 					}
+				} else if aboveGroundCount == 2 {
+					texList = append(texList, GroundFillDeepLeftT, GroundFillDeepRightT, GroundFillDeepSingleT, GroundFillDeepT)
+					tex = l.CheckTilePlacement(x, y, texList)
+				} else if aboveGroundCount == 1 {
+					texList = append(texList, GroundFillLeftT, GroundFillRightT, GroundFillSingleT, GroundFillT)
+					tex = l.CheckTilePlacement(x, y, texList)
+
+				} else {
+					texList = append(texList, GroundLeftT, GroundRightT, GroundSingleT, GroundMidT)
+					tex = l.CheckTilePlacement(x, y, texList)
 				}
 
 				ground := NewGround(NewDrawableTexture(g.texture.LoadTexture(tex)), cell, true, g.engine.Scale())
@@ -124,4 +133,31 @@ func (l *Level) Get(x, y int) LevelComponent {
 		return LevelSpace
 	}
 	return l.raster[y][x]
+}
+
+func (l *Level) CheckLeftSpace(x, y int) bool {
+	if l.Get(x-1, y) == LevelSpace && l.Get(x+1, y) == LevelGround {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (l *Level) CheckRightSpace(x, y int) bool {
+	if l.Get(x-1, y) == LevelGround && l.Get(x+1, y) == LevelSpace {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (l *Level) CheckTilePlacement(x, y int, texList []Texture) Texture {
+	if l.CheckLeftSpace(x, y) {
+		return texList[0]
+	} else if l.CheckRightSpace(x, y) {
+		return texList[1]
+	} else if l.Get(x+1, y) == LevelSpace && l.Get(x-1, y) == LevelSpace {
+		return texList[2]
+	}
+	return texList[3]
 }

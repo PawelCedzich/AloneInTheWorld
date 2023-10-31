@@ -3,6 +3,7 @@ package game
 import (
 	"flag"
 	"fmt"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -41,7 +42,7 @@ func (cfg *Config) Configure(flags *flag.FlagSet) {
 	flags.IntVar(&cfg.Width, "width", 800, "default width setting")
 	flags.IntVar(&cfg.Height, "height", 600, "default height  settings")
 	flags.Float64Var(&cfg.Scale, "scale", 0, "Default scale settings")
-	flags.BoolVar(&cfg.Fullscreen, "Fullscreen", false, "default fullscreen settings")
+	flags.BoolVar(&cfg.Fullscreen, "Fullscreen", true, "default fullscreen settings")
 }
 
 // =====================================================================================================================
@@ -68,6 +69,11 @@ func (e *Engine) Update() error {
 		object.Layout(e.windowSize.x, e.windowSize.y)
 	}
 
+	if ebiten.IsKeyPressed(ebiten.KeyP) {
+		// Jeśli klawisz "P" jest naciśnięty, zamknij aplikację.
+		log.Println("Zamykanie aplikacji...")
+		return ebiten.Termination
+	}
 	return nil
 }
 
