@@ -17,8 +17,13 @@ func NewGame(e *Engine, tex *TextureManager) *Game {
 		tex,
 	}
 
-	g.LoadStartMenu()
-	//g.LoadLevel1()
+	e.mainScreen = func() {
+		g.LoadStartMenu()
+	}
+
+	e.level1 = func() {
+		g.LoadLevel1()
+	}
 
 	return g
 }
@@ -38,5 +43,7 @@ func (g *Game) LoadLevel1() {
 func (g *Game) LoadStartMenu() {
 	g.engine.AddObject(NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundTownT))))
 
-	g.engine.AddObject(NewButton(NewDrawableTexture(g.texture.LoadTexture(StartButtonT)), Rect{250, 250, 350, 300}, g.engine.Scale()))
+	cell := Rect{250, 250, 350, 300}
+
+	g.engine.AddObject(NewButton(NewDrawableTexture(g.texture.LoadTexture(StartButtonT)), cell, g.engine.Scale(), func() { g.engine.ChangeStage(1) }))
 }

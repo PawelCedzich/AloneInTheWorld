@@ -3,7 +3,7 @@ package game
 import (
 	"flag"
 	"fmt"
-	"log"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -51,10 +51,14 @@ type Engine struct {
 	renderables []Renderable
 	Cfg         Config
 	windowSize  Vec
+	stage       int
+	blockStage  bool
+	mainScreen  func()
+	level1      func()
 }
 
 func NewEngine(cfg Config) *Engine {
-	e := &Engine{Cfg: cfg}
+	e := &Engine{Cfg: cfg, stage: 0, blockStage: false}
 	return e
 }
 
@@ -65,15 +69,14 @@ func (e *Engine) AddObject(obj Renderable) {
 
 func (e *Engine) Update() error {
 
+	if err := e.StageManager(); err != nil {
+		return fmt.Errorf("cant load Stage manager %w", err)
+	}
+
 	for _, object := range e.renderables {
 		object.Layout(e.windowSize.x, e.windowSize.y)
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyP) {
-		// Jeśli klawisz "P" jest naciśnięty, zamknij aplikację.
-		log.Println("Zamykanie aplikacji...")
-		return ebiten.Termination
-	}
 	return nil
 }
 
@@ -114,4 +117,45 @@ func (e *Engine) Start() error {
 	}
 
 	return nil
+}
+
+func (e *Engine) StageManager() error {
+
+	if e.blockStage == false {
+		switch e.stage {
+		case 0:
+			if e.mainScreen != nil {
+				e.ClearRenderables()
+				e.mainScreen()
+			}
+		case 1:
+			if e.level1 != nil {
+				e.ClearRenderables()
+				e.level1()
+			}
+		}
+		e.blockStage = true
+	}
+
+	if ebiten.IsKeyPressed(ebiten.Key1) {
+		e.ChangeStage(1)
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		e.ChangeStage(0)
+	}
+
+	if ebiten.IsKeyPressed(ebiten.Key0) {
+		os.Exit(0)
+	}
+	return nil
+}
+
+func (e *Engine) ClearRenderables() {
+	e.renderables = nil
+}
+
+func (e *Engine) ChangeStage(value int) {
+	e.stage = value
+	e.blockStage = false
 }
