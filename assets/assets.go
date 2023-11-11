@@ -7,14 +7,20 @@ import (
 //go:embed level1.txt
 var Level1 string
 
+//go:embed TileMiddle.png
+var GroundMid []byte
+
+//go:embed TileSingle.png
+var GroundSingle []byte
+
+//go:embed TileRight.png
+var GroundRight []byte
+
 //go:embed TileLeft.png
 var GroundLeft []byte
 
 //go:embed TileFill.png
 var GroundFill []byte
-
-//go:embed TileSingle.png
-var GroundSingle []byte
 
 //go:embed TileFillSingle.png
 var GroundFillSingle []byte
@@ -46,12 +52,6 @@ var GroundFillDeeper2 []byte
 //go:embed TileFillDeeper3.png
 var GroundFillDeeper3 []byte
 
-//go:embed TileMiddle.png
-var GroundMid []byte
-
-//go:embed TileRight.png
-var GroundRight []byte
-
 //go:embed BackgroundImage.png
 var BackgroundImage []byte
 
@@ -60,6 +60,9 @@ var BackgroundTown []byte
 
 //go:embed BackgroundTownFront.png
 var BackgroundTownFront []byte
+
+//go:embed StartButton.png
+var StartButton []byte
 
 //go:embed charac.png
 var Character []byte

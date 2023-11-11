@@ -31,6 +31,7 @@ const (
 	BackgroundImageT
 	BackgroundTownT
 	BackgroundTownFrontT
+	StartButtonT
 	CharacterT
 )
 
