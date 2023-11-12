@@ -31,7 +31,14 @@ const (
 	BackgroundImageT
 	BackgroundTownT
 	BackgroundTownFrontT
-	StartButtonT
+	ButtonStartT
+	ButtonSettingsT
+	ButtonContinueT
+	ButtonExitT
+	ButtonNoTextT
+	ButtonSliderT
+	ButtonOnT
+	ButtonOffT
 	CharacterT
 )
 

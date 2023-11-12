@@ -61,8 +61,29 @@ var BackgroundTown []byte
 //go:embed BackgroundTownFront.png
 var BackgroundTownFront []byte
 
-//go:embed StartButton.png
-var StartButton []byte
+//go:embed ButtonStart.png
+var ButtonStart []byte
+
+//go:embed ButtonSettings.png
+var ButtonSettings []byte
+
+//go:embed ButtonContinue.png
+var ButtonContinue []byte
+
+//go:embed ButtonExit.png
+var ButtonExit []byte
+
+//go:embed ButtonNoText.png
+var ButtonNoText []byte
+
+//go:embed ButtonSlider.png
+var ButtonSlider []byte
+
+//go:embed ButtonOn.png
+var ButtonOn []byte
+
+//go:embed ButtonOff.png
+var ButtonOff []byte
 
 //go:embed charac.png
 var Character []byte

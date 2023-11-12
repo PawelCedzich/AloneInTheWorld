@@ -39,7 +39,14 @@ func realMain() error {
 		game.BackgroundImageT:      assets.BackgroundImage,
 		game.BackgroundTownT:       assets.BackgroundTown,
 		game.BackgroundTownFrontT:  assets.BackgroundTownFront,
-		game.StartButtonT:          assets.StartButton,
+		game.ButtonStartT:          assets.ButtonStart,
+		game.ButtonSettingsT:       assets.ButtonSettings,
+		game.ButtonExitT:           assets.ButtonExit,
+		game.ButtonContinueT:       assets.ButtonContinue,
+		game.ButtonNoTextT:         assets.ButtonNoText,
+		game.ButtonSliderT:         assets.ButtonSlider,
+		game.ButtonOnT:             assets.ButtonOn,
+		game.ButtonOffT:            assets.ButtonOff,
 		game.CharacterT:            assets.Character,
 	})
 	if err != nil {

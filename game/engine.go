@@ -27,6 +27,7 @@ type Drawable interface {
 type Config struct {
 	Width      int
 	Height     int
+	Stage      int
 	Scale      float64
 	Fullscreen bool
 }
@@ -35,26 +36,29 @@ func (cfg *Config) Reset() {
 	cfg.Width = 800
 	cfg.Height = 600
 	cfg.Scale = 0
+	cfg.Stage = 1
 	cfg.Fullscreen = true
 }
 
 func (cfg *Config) Configure(flags *flag.FlagSet) {
 	flags.IntVar(&cfg.Width, "width", 800, "default width setting")
-	flags.IntVar(&cfg.Height, "height", 600, "default height  settings")
+	flags.IntVar(&cfg.Height, "height", 600, "default height settings")
+	flags.IntVar(&cfg.Stage, "stage", 0, "default stage settings")
 	flags.Float64Var(&cfg.Scale, "scale", 0, "Default scale settings")
-	flags.BoolVar(&cfg.Fullscreen, "Fullscreen", true, "default fullscreen settings")
+	flags.BoolVar(&cfg.Fullscreen, "fullscreen", true, "default fullscreen settings")
 }
 
 // =====================================================================================================================
 
 type Engine struct {
-	renderables []Renderable
-	Cfg         Config
-	windowSize  Vec
-	stage       int
-	blockStage  bool
-	mainScreen  func()
-	level1      func()
+	renderables   []Renderable
+	Cfg           Config
+	windowSize    Vec
+	stage         int
+	blockStage    bool
+	mainScreen    func()
+	levelSettings func()
+	level1        func()
 }
 
 func NewEngine(cfg Config) *Engine {
@@ -123,6 +127,8 @@ func (e *Engine) StageManager() error {
 
 	if e.blockStage == false {
 		switch e.stage {
+		case -1:
+			os.Exit(0)
 		case 0:
 			if e.mainScreen != nil {
 				e.ClearRenderables()
@@ -133,10 +139,16 @@ func (e *Engine) StageManager() error {
 				e.ClearRenderables()
 				e.level1()
 			}
+		case 10:
+			if e.levelSettings != nil {
+				e.ClearRenderables()
+				e.levelSettings()
+			}
 		}
 		e.blockStage = true
 	}
 
+	//dubug tools
 	if ebiten.IsKeyPressed(ebiten.Key1) {
 		e.ChangeStage(1)
 	}
@@ -146,7 +158,7 @@ func (e *Engine) StageManager() error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.Key0) {
-		os.Exit(0)
+		e.ChangeStage(-1)
 	}
 	return nil
 }
