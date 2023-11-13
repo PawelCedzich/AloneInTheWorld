@@ -87,3 +87,6 @@ var ButtonOff []byte
 
 //go:embed charac.png
 var Character []byte
+
+//go:embed Tusj.ttf
+var Tusj []byte

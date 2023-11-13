@@ -53,6 +53,7 @@ func (cfg *Config) Configure(flags *flag.FlagSet) {
 type Engine struct {
 	renderables   []Renderable
 	Cfg           Config
+	camera        *Camera
 	windowSize    Vec
 	stage         int
 	blockStage    bool
@@ -62,7 +63,7 @@ type Engine struct {
 }
 
 func NewEngine(cfg Config) *Engine {
-	e := &Engine{Cfg: cfg, stage: 0, blockStage: false}
+	e := &Engine{Cfg: cfg, camera: NewCamera(), stage: 0, blockStage: false}
 	return e
 }
 
@@ -87,6 +88,8 @@ func (e *Engine) Update() error {
 func (e *Engine) Draw(screen *ebiten.Image) {
 
 	canvas := NewCanvas(screen)
+	sw, sh := canvas.Size()
+	canvas.SetTransformation(e.camera.Transformation(sw, sh))
 
 	if e.renderables != nil {
 		for _, object := range e.renderables {
@@ -126,6 +129,8 @@ func (e *Engine) Start() error {
 func (e *Engine) StageManager() error {
 
 	if e.blockStage == false {
+		e.ClearCamera()
+
 		switch e.stage {
 		case -1:
 			os.Exit(0)
@@ -170,4 +175,8 @@ func (e *Engine) ClearRenderables() {
 func (e *Engine) ChangeStage(value int) {
 	e.stage = value
 	e.blockStage = false
+}
+
+func (e *Engine) ClearCamera() {
+	e.camera = NewCamera()
 }

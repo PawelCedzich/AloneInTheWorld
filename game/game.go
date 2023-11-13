@@ -9,12 +9,14 @@ import (
 type Game struct {
 	engine  *Engine
 	texture *TextureManager
+	font    *FontManager
 }
 
-func NewGame(e *Engine, tex *TextureManager) *Game {
+func NewGame(e *Engine, tex *TextureManager, font *FontManager) *Game {
 	g := &Game{
 		e,
 		tex,
+		font,
 	}
 
 	e.mainScreen = func() {
@@ -42,6 +44,8 @@ func (g *Game) LoadLevel1() {
 		g.engine.AddObject(renderable)
 	}
 
+	g.engine.camera.UpdateMainCharacter(level.player)
+
 }
 
 func (g *Game) LoadStartMenu() {
@@ -61,6 +65,7 @@ func (g *Game) LoadStartMenu() {
 	cell = Rect{700, 250, 800, 300}
 	g.engine.AddObject(NewButton(NewDrawableTexture(g.texture.LoadTexture(ButtonExitT)), cell, g.engine.Scale(), func() { g.engine.ChangeStage(-1) }))
 
+	g.engine.AddObject(NewText(g.font.LoadFont(TusjF), "Hello", 24*g.engine.Scale(), 0.3, 0.3))
 }
 
 func (g *Game) LoadSettings() {

@@ -113,7 +113,7 @@ func (d DrawableTexture) Draw(dst *Canvas) {
 }
 
 func (d DrawableTexture) Size() (x, y float64) {
-	texW, texH := d.tex.Size()
+	texW, texH := d.tex.Bounds().Dx(), d.tex.Bounds().Dy()
 	return float64(texW), float64(texH)
 }
 

@@ -53,8 +53,12 @@ func realMain() error {
 		panic(err)
 	}
 
+	font, err := game.NewFontManager(map[game.Font][]byte{
+		game.TusjF: assets.Tusj,
+	})
+
 	engine := game.NewEngine(cfg)
-	game.NewGame(engine, texture)
+	game.NewGame(engine, texture, font)
 
 	if err := engine.Start(); err != nil {
 		panic(err)

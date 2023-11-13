@@ -12,12 +12,14 @@ const (
 	LevelSpace  LevelComponent = ' '
 	LevelGround LevelComponent = 'X'
 	LevelPlayer LevelComponent = 'P'
+	LevelGoal   LevelComponent = 'G'
 )
 
 type Level struct {
 	raster [][]LevelComponent
 	res    []Renderable
 	player *Player
+	goal   *RectObject
 }
 
 func ParseLevel(str string) (*Level, error) {
@@ -51,6 +53,8 @@ func ParseLevel(str string) (*Level, error) {
 				fallthrough
 			case LevelGround:
 				fallthrough
+			case LevelGoal:
+				fallthrough
 			case LevelSpace:
 				raster[lineNo][runeNo] = LevelComponent(char)
 			}
@@ -76,7 +80,8 @@ func (l *Level) Build(g *Game) []Renderable {
 			switch component {
 			case LevelPlayer:
 				l.player = NewPlayer(NewDrawableTexture(g.texture.LoadTexture(CharacterT)), cell, g.engine.Scale())
-
+			case LevelGoal:
+				l.goal = NewRectObject(NewDrawableTexture(g.texture.LoadTexture(ButtonNoTextT)), cell)
 			case LevelGround:
 				var tex Texture
 				var texList []Texture
@@ -117,13 +122,22 @@ func (l *Level) Build(g *Game) []Renderable {
 		}
 	}
 
+	if l.goal == nil {
+		panic(fmt.Errorf("invalid state, no goal"))
+	}
+
 	for _, r := range l.res {
 		if ground, ok := r.(*Ground); ok {
 			l.player.AppendGround(ground)
 		}
 	}
+	loseText := NewText(g.font.LoadFont(TusjF), "You Lost\nTHE END", 24*g.engine.Scale(), 0.5, 0.4)
+	winText := NewText(g.font.LoadFont(TusjF), "You Won\nTHE END", 24*g.engine.Scale(), 0.5, 0.4)
+
+	l.res = append(l.res, l.goal)
 
 	l.res = append(l.res, l.player)
+	l.res = append(l.res, NewGoal(l.player, loseText, winText, l.goal, g.engine.Scale()))
 
 	return l.res
 }
