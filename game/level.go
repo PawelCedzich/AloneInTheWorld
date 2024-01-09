@@ -9,15 +9,17 @@ import (
 type LevelComponent rune
 
 const (
-	LevelSpace  LevelComponent = ' '
-	LevelGround LevelComponent = 'X'
-	LevelPlayer LevelComponent = 'P'
-	LevelGoal   LevelComponent = 'G'
+	LevelSpace   LevelComponent = ' '
+	LevelGround  LevelComponent = 'X'
+	LevelPlayer  LevelComponent = 'P'
+	LevelGoal    LevelComponent = 'G'
+	LevelRaccoon LevelComponent = 'R'
 )
 
 type Level struct {
 	raster [][]LevelComponent
 	res    []Renderable
+	npcs   []*Npc
 	player *Player
 	goal   *RectObject
 }
@@ -54,6 +56,8 @@ func ParseLevel(str string) (*Level, error) {
 			case LevelGround:
 				fallthrough
 			case LevelGoal:
+				fallthrough
+			case LevelRaccoon:
 				fallthrough
 			case LevelSpace:
 				raster[lineNo][runeNo] = LevelComponent(char)
@@ -118,6 +122,11 @@ func (l *Level) Build(g *Game) []Renderable {
 
 				ground := NewGround(NewDrawableTexture(g.texture.LoadTexture(tex)), cell, true, g.engine.Scale())
 				l.res = append(l.res, ground)
+			case LevelRaccoon:
+				min, max := l.GroundGroup(x, y, cell.Scale(g.engine.Scale()))
+				anim := NewDrawableTexture(g.texture.LoadTexture(ButtonContinueT))
+				r := NewNpc(anim, cell.Scale(g.engine.Scale()), g.engine.Scale(), 2, 15, 10, min, max, false)
+				l.npcs = append(l.npcs, r)
 			}
 		}
 	}
@@ -125,9 +134,17 @@ func (l *Level) Build(g *Game) []Renderable {
 	if l.goal == nil {
 		panic(fmt.Errorf("invalid state, no goal"))
 	}
+	for _, npc := range l.npcs {
+		l.res = append(l.res, npc)
+		npc.register(l.player)
+		l.player.npcs = append(l.player.npcs, npc)
+	}
 
 	for _, r := range l.res {
 		if ground, ok := r.(*Ground); ok {
+			for _, npc := range l.npcs {
+				npc.RegisterGround(ground)
+			}
 			l.player.AppendGround(ground)
 		}
 	}
@@ -174,4 +191,31 @@ func (l *Level) CheckTilePlacement(x, y int, texList []Texture) Texture {
 		return texList[2]
 	}
 	return texList[3]
+}
+
+func (l *Level) GroundGroup(x, y int, cell Rect) (float64, float64) {
+	min := float64(x) * 100
+	max := float64(x)*100 + cell.width()
+
+	for i := 1; i < 10; i++ {
+		if l.Get(x-i, y) != LevelGround {
+			if l.Get(x-i, y+1) == LevelGround {
+				min -= cell.width()
+			} else if l.Get(x-i, y+1) == LevelSpace {
+				break
+			}
+		}
+	}
+
+	for i := 1; i < 10; i++ {
+		if l.Get(x+i, y) != LevelGround {
+			if l.Get(x+i, y+1) == LevelGround {
+				max += cell.width()
+			} else if l.Get(x+i, y+1) == LevelSpace {
+				break
+			}
+		}
+	}
+
+	return min, max
 }

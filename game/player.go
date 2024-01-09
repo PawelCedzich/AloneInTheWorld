@@ -9,7 +9,9 @@ import (
 type Player struct {
 	*RectObject
 	scale        float64
+	stun         float64
 	grounds      []*Ground
+	npcs         []*Npc
 	velocity     Vec
 	jumpDuration int
 	jumping      bool
@@ -28,40 +30,48 @@ func NewPlayer(tex Drawable, area Rect, scale float64) *Player {
 }
 
 func (p *Player) Layout(sw, sh float64) {
-
+	p.stun--
 	scale := p.scale
 
-	//inputs
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		p.velocity.x = 8 * scale
-	} else if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		p.velocity.x = -8 * scale
-	} else {
-		p.velocity.x = 0
+	playerBox := p.BoundingBox()
+	//npc interactions
+	for _, enemy := range p.npcs {
+		if playerBox.Overlaps(enemy.BoundingBox()) {
+			enemy.PushPLayer(p)
+		}
 	}
+	//inputs
+	if p.stun < 0 {
+		if ebiten.IsKeyPressed(ebiten.KeyRight) {
+			p.velocity.x = 8 * scale
+		} else if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+			p.velocity.x = -8 * scale
+		} else {
+			p.velocity.x = 0
+		}
 
-	if p.jumping {
-		p.jumpDuration++
-		if ebiten.IsKeyPressed(ebiten.KeyUp) {
-			p.velocity.y -= 2 * scale
-		}
-		if p.jumpDuration > 5 {
-			p.jumping = false
-		}
-	} else {
-		if p.Grounded() {
-			p.velocity.y = 0
+		if p.jumping {
+			p.jumpDuration++
 			if ebiten.IsKeyPressed(ebiten.KeyUp) {
-				p.jumping = true
-				p.jumpDuration = 0
+				p.velocity.y -= 2 * scale
+			}
+			if p.jumpDuration > 5 {
+				p.jumping = false
 			}
 		} else {
-			if p.velocity.y < 20*scale {
-				p.velocity.y += 1 * scale
+			if p.Grounded() {
+				p.velocity.y = 0
+				if ebiten.IsKeyPressed(ebiten.KeyUp) {
+					p.jumping = true
+					p.jumpDuration = 0
+				}
+			} else {
+				if p.velocity.y < 20*scale {
+					p.velocity.y += 1 * scale
+				}
 			}
 		}
 	}
-
 	p.area = p.area.Offset(p.velocity.x, p.velocity.y)
 
 	p.snapped = false

@@ -60,8 +60,9 @@ func (r *RenderObject) Layout(w, h float64) {
 // =====================================================================================================================
 
 type RectObject struct {
-	texture Drawable
-	area    Rect
+	texture     Drawable
+	area        Rect
+	mirrorYaxis bool
 }
 
 func NewRectObject(tex Drawable, area Rect) *RectObject {
@@ -84,6 +85,10 @@ func (r *RectObject) Draw(dst *Canvas) {
 
 	op := &ebiten.DrawImageOptions{}
 
+	if r.mirrorYaxis {
+		op.GeoM.Scale(-1, 1)
+		op.GeoM.Translate(texW*2/3, 0)
+	}
 	op.GeoM.Scale(scale.x, scale.y)
 	op.GeoM.Translate(position.x, position.y)
 

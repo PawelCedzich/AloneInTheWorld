@@ -7,8 +7,9 @@ import (
 type Slider struct {
 	*RectObject
 	scale         float64
-	Volume        float64
+	value         float64
 	sliderElement *SliderElement // Dodajemy element suwaka
+	action        func(float64)
 }
 
 type SliderElement struct {
@@ -25,7 +26,7 @@ func NewSliderElement(tex Drawable, area Rect) *SliderElement {
 	return s
 }
 
-func NewSlider(tex Drawable, sliderTex Drawable, area Rect, scale float64) *Slider {
+func NewSlider(tex Drawable, sliderTex Drawable, area Rect, scale float64, action func(float64)) *Slider {
 
 	left := area.Left + (area.width() / 2) - 10
 	right := area.Left + (area.width() / 2) + 10
@@ -38,6 +39,7 @@ func NewSlider(tex Drawable, sliderTex Drawable, area Rect, scale float64) *Slid
 		RectObject:    NewRectObject(tex, area),
 		scale:         scale,
 		sliderElement: NewSliderElement(sliderTex, cell),
+		action:        action,
 	}
 
 	return s
@@ -57,12 +59,16 @@ func (s *Slider) Layout(sw, sh float64) {
 
 	if s.sliderElement.dragging {
 		mouseX, _ := ebiten.CursorPosition()
-		if mouseX+10 >= int(s.area.Left) && mouseX-1 <= int(s.area.Right) {
+		if mouseX >= int(s.area.Left) && mouseX <= int(s.area.Right) {
 			delta := float64(mouseX) - s.sliderElement.area.Left - 10
 			s.sliderElement.area = s.sliderElement.area.Offset(delta, 0)
 		}
 
-		//TODO ustawienie glosnosni uzyc odwolania do funkcji z silnika w celu zmiany dynamicznej
+		lenght := s.area.Right - s.area.Left
+		currentSliderPosition := s.sliderElement.area.Left + 10 - s.area.Left
+		s.value = currentSliderPosition / lenght * 100
+
+		s.action(s.value)
 	}
 }
 
@@ -70,4 +76,5 @@ func (s *Slider) Draw(dst *Canvas) {
 
 	s.RectObject.Draw(dst)
 	s.sliderElement.RectObject.Draw(dst)
+
 }

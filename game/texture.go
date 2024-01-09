@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"image"
 	"io"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -61,7 +62,7 @@ func NewTextureManager(resources map[Texture][]byte) (*TextureManager, error) {
 func (t *TextureManager) LoadTexture(id Texture) *ebiten.Image {
 	tex, ok := t.textures[id]
 	if !ok {
-		panic(fmt.Sprintf("Texture id not defined %d ", id))
+		panic("Texture id not defined ")
 	}
 	return tex
 }
@@ -96,6 +97,70 @@ func ParseTextureAtlas(in io.Reader) (TextureAtlas, error) {
 
 // =====================================================================================================================
 
+type TextureAnimation struct {
+	frames []*ebiten.Image
+	idx    float64
+	fps    float64
+	w, h   int
+	pivot  Vec
+}
+
+func NewTextureAnimation(tex *ebiten.Image, atlas TextureAtlas, fps float64) *TextureAnimation {
+	if len(atlas.SubTexture) == 0 {
+		panic("invalid state subTexture cant be 0")
+	}
+	t := &TextureAnimation{
+		w:   atlas.SubTexture[0].Width,
+		h:   atlas.SubTexture[0].Height,
+		fps: fps,
+		pivot: Vec{
+			x: atlas.SubTexture[0].PivotX,
+			y: atlas.SubTexture[0].PivotY,
+		},
+	}
+
+	for _, subTexture := range atlas.SubTexture {
+		t.frames = append(t.frames, tex.SubImage(image.Rect(subTexture.X, subTexture.Y, subTexture.X+subTexture.Width, subTexture.Y+subTexture.Height)).(*ebiten.Image))
+	}
+
+	return t
+}
+
+func (t *TextureAnimation) Update() {
+	delta := t.fps / 60
+	t.idx += delta
+	if t.idx > float64(len(t.frames)-1) {
+		t.idx = 0
+	}
+}
+
+func (t *TextureAnimation) Draw(dst *Canvas) {
+	dst.DrawImage(t.frames[int(t.idx)], &ebiten.DrawImageOptions{})
+}
+
+func (t *TextureAnimation) Size() (x, y float64) {
+	return float64(t.w), float64(t.h)
+}
+
+func (t *TextureAnimation) Pivot() Vec {
+	return t.pivot
+}
+
+// =====================================================================================================================
+
+func NewTextureAnimationFromFrames(fps float64, frames ...*ebiten.Image) *TextureAnimation {
+	w, h := frames[0].Size()
+	return &TextureAnimation{
+		fps:    fps,
+		frames: frames,
+		idx:    0,
+		w:      w,
+		h:      h,
+	}
+}
+
+// =====================================================================================================================
+
 type DrawableTexture struct {
 	tex *ebiten.Image
 }
@@ -113,7 +178,7 @@ func (d DrawableTexture) Draw(dst *Canvas) {
 }
 
 func (d DrawableTexture) Size() (x, y float64) {
-	texW, texH := d.tex.Bounds().Dx(), d.tex.Bounds().Dy()
+	texW, texH := d.tex.Size()
 	return float64(texW), float64(texH)
 }
 
@@ -123,4 +188,55 @@ func (d DrawableTexture) Pivot() Vec {
 		y: 0,
 	}
 	return v
+}
+
+// =====================================================================================================================
+
+type AnimationGroup struct {
+	animations []*TextureAnimation
+	idx        int
+}
+
+func NewAnimationGroup(animations ...*TextureAnimation) *AnimationGroup {
+	a := &AnimationGroup{
+		animations: animations,
+	}
+	return a
+}
+
+func (a AnimationGroup) Update() {
+	a.animations[a.idx].Update()
+}
+
+func (a AnimationGroup) Draw(dst *Canvas) {
+	a.animations[a.idx].Draw(dst)
+}
+
+func (a AnimationGroup) Size() (x, y float64) {
+	texW, texH := a.animations[a.idx].Size()
+	return texW, texH
+}
+
+func (a AnimationGroup) Pivot() Vec {
+	p := a.animations[a.idx].Pivot()
+	return p
+}
+
+func CenterInside(w, h int, tex *ebiten.Image) *ebiten.Image {
+	dst := ebiten.NewImage(w, h)
+	op := &ebiten.DrawImageOptions{}
+	texW, texH := tex.Size()
+	op.GeoM.Translate(float64(w)/2-float64(texW)/2, float64(h)/2-float64(texH)/2)
+	dst.DrawImage(tex, op)
+	return dst
+}
+
+func mirrorY(tex *ebiten.Image) *ebiten.Image {
+	dst := ebiten.NewImage(tex.Size())
+	op := &ebiten.DrawImageOptions{}
+	texW, _ := tex.Size()
+	op.GeoM.Scale(-1, 1)
+	op.GeoM.Translate(float64(texW), 0)
+	dst.DrawImage(tex, op)
+	return dst
 }

@@ -57,8 +57,15 @@ func realMain() error {
 		game.TusjF: assets.Tusj,
 	})
 
+	music, err := game.NewAudioManager(map[game.Audio][]byte{
+		game.Music: assets.Music,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	engine := game.NewEngine(cfg)
-	game.NewGame(engine, texture, font)
+	game.NewGame(engine, texture, font, music)
 
 	if err := engine.Start(); err != nil {
 		panic(err)

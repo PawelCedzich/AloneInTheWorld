@@ -90,3 +90,6 @@ var Character []byte
 
 //go:embed Tusj.ttf
 var Tusj []byte
+
+//go:embed mainscreen_bgm.mp3
+var Music []byte

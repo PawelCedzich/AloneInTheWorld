@@ -51,29 +51,27 @@ func (cfg *Config) Configure(flags *flag.FlagSet) {
 // =====================================================================================================================
 
 type Engine struct {
-	renderables   []Renderable
-	Cfg           Config
-	camera        *Camera
-	windowSize    Vec
-	stage         int
-	blockStage    bool
-	mainScreen    func()
-	levelSettings func()
-	level1        func()
+	renderables      []Renderable
+	renderablesStack [][]Renderable
+	stageStack       []int
+	Cfg              Config
+	camera           *Camera
+	windowSize       Vec
+	stage            int
+	changingStage    bool
+	blockCountDown   int
+	mainScreen       func()
+	levelSettings    func()
+	level1           func()
 }
 
 func NewEngine(cfg Config) *Engine {
-	e := &Engine{Cfg: cfg, camera: NewCamera(), stage: 0, blockStage: false}
+	e := &Engine{Cfg: cfg, camera: NewCamera(), stage: 0, changingStage: true, blockCountDown: 10}
 	return e
 }
 
-func (e *Engine) AddObject(obj Renderable) {
-	e.renderables = append(e.renderables, obj)
-
-}
-
 func (e *Engine) Update() error {
-
+	e.blockCountDown++
 	if err := e.StageManager(); err != nil {
 		return fmt.Errorf("cant load Stage manager %w", err)
 	}
@@ -105,6 +103,11 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHei
 	return int(e.windowSize.x), int(e.windowSize.y)
 }
 
+func (e *Engine) AddObject(obj Renderable) {
+	e.renderables = append(e.renderables, obj)
+
+}
+
 func (e *Engine) Scale() float64 {
 	scale := ebiten.DeviceScaleFactor()
 	if e.Cfg.Scale != 0 {
@@ -128,29 +131,32 @@ func (e *Engine) Start() error {
 
 func (e *Engine) StageManager() error {
 
-	if e.blockStage == false {
+	if e.changingStage == true {
 		e.ClearCamera()
-
 		switch e.stage {
 		case -1:
 			os.Exit(0)
 		case 0:
 			if e.mainScreen != nil {
-				e.ClearRenderables()
 				e.mainScreen()
+				if len(e.renderablesStack) == 0 {
+					e.PushStage(0, e.renderables)
+				} else {
+					e.PopStage()
+				}
 			}
 		case 1:
 			if e.level1 != nil {
-				e.ClearRenderables()
 				e.level1()
+				e.PushStage(e.stage, e.renderables)
 			}
 		case 10:
 			if e.levelSettings != nil {
-				e.ClearRenderables()
 				e.levelSettings()
+				e.PushStage(10, e.renderables)
 			}
 		}
-		e.blockStage = true
+		e.changingStage = false
 	}
 
 	//dubug tools
@@ -159,7 +165,12 @@ func (e *Engine) StageManager() error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		e.ChangeStage(0)
+		if e.stage == 10 {
+			e.ChangeStage(1)
+		} else {
+			e.ChangeStage(10)
+		}
+
 	}
 
 	if ebiten.IsKeyPressed(ebiten.Key0) {
@@ -168,13 +179,37 @@ func (e *Engine) StageManager() error {
 	return nil
 }
 
+func (e *Engine) PushStage(stage int, renderables []Renderable) {
+	e.stageStack = append(e.stageStack, stage)
+	e.renderablesStack = append(e.renderablesStack, renderables)
+}
+
+func (e *Engine) PopStage() {
+	length := len(e.stageStack)
+	if length == 0 {
+		return
+	}
+
+	e.stage = e.stageStack[length-1]
+	e.stageStack = e.stageStack[:length-1]
+
+	e.ClearRenderables()
+	e.renderables = e.renderablesStack[length-1]
+	e.renderablesStack = e.renderablesStack[:length-1]
+}
+
 func (e *Engine) ClearRenderables() {
 	e.renderables = nil
 }
 
 func (e *Engine) ChangeStage(value int) {
-	e.stage = value
-	e.blockStage = false
+	if e.blockCountDown > 10 {
+		e.stage = value
+		e.changingStage = true
+		e.blockCountDown = 0
+	} else {
+		return
+	}
 }
 
 func (e *Engine) ClearCamera() {
