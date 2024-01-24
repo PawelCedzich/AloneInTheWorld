@@ -45,28 +45,33 @@ func (cfg *Config) Configure(flags *flag.FlagSet) {
 	flags.IntVar(&cfg.Height, "height", 600, "default height settings")
 	flags.IntVar(&cfg.Stage, "stage", 0, "default stage settings")
 	flags.Float64Var(&cfg.Scale, "scale", 0, "Default scale settings")
-	flags.BoolVar(&cfg.Fullscreen, "fullscreen", true, "default fullscreen settings")
+	flags.BoolVar(&cfg.Fullscreen, "fullscreen", false, "default fullscreen settings")
 }
 
 // =====================================================================================================================
 
 type Engine struct {
-	renderables      []Renderable
-	renderablesStack [][]Renderable
-	stageStack       []int
-	Cfg              Config
-	camera           *Camera
-	windowSize       Vec
-	stage            int
-	changingStage    bool
-	blockCountDown   int
-	mainScreen       func()
-	levelSettings    func()
-	level1           func()
+	renderables       []Renderable
+	renderablesStack  [][]Renderable
+	stageStack        []int
+	Cfg               Config
+	camera            *Camera
+	windowSize        Vec
+	changingStage     bool
+	newGame           bool
+	blockCountDown    int
+	playerLevel       int
+	stage             int
+	mainScreen        func()
+	levelSettings     func()
+	levelGameSettings func()
+	levelGameOver     func()
+	level             func(int, bool)
+	updateCam         func()
 }
 
 func NewEngine(cfg Config) *Engine {
-	e := &Engine{Cfg: cfg, camera: NewCamera(), stage: 0, changingStage: true, blockCountDown: 10}
+	e := &Engine{Cfg: cfg, camera: NewCamera(), stage: 0, changingStage: true, blockCountDown: 10, playerLevel: 1, newGame: true}
 	return e
 }
 
@@ -81,6 +86,7 @@ func (e *Engine) Update() error {
 	}
 
 	return nil
+
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
@@ -131,23 +137,39 @@ func (e *Engine) Start() error {
 
 func (e *Engine) StageManager() error {
 
+	//dubugging tools
+	if ebiten.IsKeyPressed(ebiten.Key1) {
+		e.ChangeStage(4)
+	}
+
 	if e.changingStage == true {
 		e.ClearCamera()
 		switch e.stage {
-		case -1:
-			os.Exit(0)
 		case 0:
 			if e.mainScreen != nil {
-				e.mainScreen()
 				if len(e.renderablesStack) == 0 {
+					e.mainScreen()
 					e.PushStage(0, e.renderables)
-				} else {
-					e.PopStage()
 				}
 			}
 		case 1:
-			if e.level1 != nil {
-				e.level1()
+			if e.level != nil {
+				if len(e.stageStack) <= 1 {
+					e.level(e.playerLevel, e.newGame)
+					e.PushStage(e.stage, e.renderables)
+				}
+			}
+			if e.updateCam != nil {
+				e.updateCam()
+			}
+		case 2:
+			if e.levelGameSettings != nil {
+				e.levelGameSettings()
+				e.PushStage(e.stage, e.renderables)
+			}
+		case 4:
+			if e.levelGameOver != nil {
+				e.levelGameOver()
 				e.PushStage(e.stage, e.renderables)
 			}
 		case 10:
@@ -159,18 +181,16 @@ func (e *Engine) StageManager() error {
 		e.changingStage = false
 	}
 
-	//dubug tools
-	if ebiten.IsKeyPressed(ebiten.Key1) {
-		e.ChangeStage(1)
-	}
-
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		if e.stage == 10 {
+			e.ChangeStage(0)
+		} else if e.stage == 1 {
+			e.ChangeStage(2)
+		} else if e.stage == 2 {
 			e.ChangeStage(1)
 		} else {
 			e.ChangeStage(10)
 		}
-
 	}
 
 	if ebiten.IsKeyPressed(ebiten.Key0) {
@@ -190,12 +210,21 @@ func (e *Engine) PopStage() {
 		return
 	}
 
-	e.stage = e.stageStack[length-1]
 	e.stageStack = e.stageStack[:length-1]
+	if length == 2 {
+		e.stage = e.stageStack[0]
+	} else {
+		e.stage = e.stageStack[length-2]
+	}
 
 	e.ClearRenderables()
 	e.renderables = e.renderablesStack[length-1]
 	e.renderablesStack = e.renderablesStack[:length-1]
+	if length == 2 {
+		e.renderables = e.renderablesStack[0]
+	} else {
+		e.renderables = e.renderablesStack[length-2]
+	}
 }
 
 func (e *Engine) ClearRenderables() {
@@ -203,15 +232,58 @@ func (e *Engine) ClearRenderables() {
 }
 
 func (e *Engine) ChangeStage(value int) {
-	if e.blockCountDown > 10 {
-		e.stage = value
+	popping := false
+	if e.blockCountDown > 15 {
+		if value == -1 {
+			os.Exit(0)
+		}
+		if value < e.stage {
+			e.PopStage()
+			popping = true
+		} else if value == e.stage {
+			e.PopStage()
+		}
+		if popping != true {
+			e.stage = value
+		}
 		e.changingStage = true
 		e.blockCountDown = 0
+
 	} else {
 		return
 	}
 }
 
+func (e *Engine) moveBackToStart() {
+	e.PopStage()
+	e.ChangeStage(0)
+	e.playerLevel = 1
+}
+
 func (e *Engine) ClearCamera() {
 	e.camera = NewCamera()
+}
+
+func (e *Engine) ChangePlayerLvL(val int) {
+
+	e.ChangeStage(1)
+	e.playerLevel = val
+}
+
+func (e *Engine) NewGameBool() {
+	e.newGame = true
+	e.ChangeStage(1)
+}
+
+func (e *Engine) SavedGameBool() {
+	e.newGame = false
+	e.ChangeStage(1)
+}
+
+func (e *Engine) ChangeFullscreen() {
+	if ebiten.IsFullscreen() {
+		ebiten.SetFullscreen(false)
+	} else {
+		ebiten.SetFullscreen(true)
+	}
 }

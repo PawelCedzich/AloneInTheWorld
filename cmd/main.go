@@ -40,6 +40,7 @@ func realMain() error {
 		game.BackgroundTownT:       assets.BackgroundTown,
 		game.BackgroundTownFrontT:  assets.BackgroundTownFront,
 		game.ButtonStartT:          assets.ButtonStart,
+		game.ButtonSaveT:           assets.ButtonSave,
 		game.ButtonSettingsT:       assets.ButtonSettings,
 		game.ButtonExitT:           assets.ButtonExit,
 		game.ButtonContinueT:       assets.ButtonContinue,
@@ -48,6 +49,12 @@ func realMain() error {
 		game.ButtonOnT:             assets.ButtonOn,
 		game.ButtonOffT:            assets.ButtonOff,
 		game.CharacterT:            assets.Character,
+		game.MortyVanillaT:         assets.MortyVanilla,
+		game.MortyJumpingT:         assets.MortyJumping,
+		game.MortyMeditatingT:      assets.MortyMeditating,
+		game.MortyJoyFulT:          assets.MortyJoyFul,
+		game.MortySadFulT:          assets.MortySadFul,
+		game.MortyWalkingT:         assets.MortyWalking,
 	})
 	if err != nil {
 		panic(err)

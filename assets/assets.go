@@ -7,6 +7,9 @@ import (
 //go:embed level1.txt
 var Level1 string
 
+//go:embed level2.txt
+var Level2 string
+
 //go:embed TileMiddle.png
 var GroundMid []byte
 
@@ -64,6 +67,9 @@ var BackgroundTownFront []byte
 //go:embed ButtonStart.png
 var ButtonStart []byte
 
+//go:embed ButtonSave.png
+var ButtonSave []byte
+
 //go:embed ButtonSettings.png
 var ButtonSettings []byte
 
@@ -93,3 +99,43 @@ var Tusj []byte
 
 //go:embed mainscreen_bgm.mp3
 var Music []byte
+
+//================================
+
+//go:embed morty_vanilla_idle.png
+var MortyVanilla []byte
+
+//go:embed morty_vanilla_idle.xml
+var MortyVanillaAtlas []byte
+
+//go:embed morty_vanilla_jumping.png
+var MortyJumping []byte
+
+//go:embed morty_vanilla_jumping.xml
+var MortyJumpingAtlas []byte
+
+//go:embed morty_vanilla_meditating.png
+var MortyMeditating []byte
+
+//go:embed morty_vanilla_meditating.xml
+var MortyMeditatingAtlas []byte
+
+//go:embed morty_vanilla_walking.png
+var MortyWalking []byte
+
+//go:embed morty_vanilla_walking.xml
+var MortyWalkingAtlas []byte
+
+//go:embed morty_vanilla_joyful.png
+var MortyJoyFul []byte
+
+//go:embed morty_vanilla_joyful.xml
+var MortyJoyFulAtlas []byte
+
+//go:embed morty_vanilla_sadful.png
+var MortySadFul []byte
+
+//go:embed morty_vanilla_sadful.xml
+var MortySadFulAtlas []byte
+
+//==============================================================

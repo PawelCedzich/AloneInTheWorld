@@ -1,0 +1,31 @@
+﻿<TextureAtlas imagePath="jumping.png">
+	<SubTexture name="Sleeping Instanz 10000" x="0" y="0" w="270" h="206" pivotX="86" pivotY="103"/>
+	<SubTexture name="Sleeping Instanz 10001" x="270" y="0" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10002" x="540" y="0" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10003" x="810" y="0" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10004" x="1080" y="0" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10005" x="1350" y="0" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10006" x="1620" y="0" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10007" x="0" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10008" x="270" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10009" x="540" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10010" x="810" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10011" x="1080" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10012" x="1350" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10013" x="1620" y="206" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10014" x="0" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10015" x="270" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10016" x="540" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10017" x="810" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10018" x="1080" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10019" x="1350" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10020" x="1620" y="412" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10021" x="0" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10022" x="270" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10023" x="540" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10024" x="810" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10025" x="1080" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10026" x="1350" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10027" x="1620" y="618" w="270" h="206"/>
+	<SubTexture name="Sleeping Instanz 10028" x="0" y="824" w="270" h="206"/>
+</TextureAtlas>

@@ -1,9 +1,12 @@
 package game
 
 import (
+	"bytes"
 	"fmt"
 	"math/rand"
 	"strings"
+
+	"github.com/PawelCedzich/AloneInTheWorld/AloneInTheWorld/assets"
 )
 
 type LevelComponent rune
@@ -69,7 +72,6 @@ func ParseLevel(str string) (*Level, error) {
 }
 
 func (l *Level) Build(g *Game) []Renderable {
-
 	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundImageT))))
 	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundTownFrontT))))
 	l.res = append(l.res, NewBackground(NewDrawableTexture(g.texture.LoadTexture(BackgroundTownT))))
@@ -83,14 +85,13 @@ func (l *Level) Build(g *Game) []Renderable {
 			cell := Rect{pos.x, pos.y, pos.x + 50, pos.y + 50}
 			switch component {
 			case LevelPlayer:
-				l.player = NewPlayer(NewDrawableTexture(g.texture.LoadTexture(CharacterT)), cell, g.engine.Scale())
+				l.player = l.NewPlayerObj(g, cell)
 			case LevelGoal:
 				l.goal = NewRectObject(NewDrawableTexture(g.texture.LoadTexture(ButtonNoTextT)), cell)
 			case LevelGround:
 				var tex Texture
 				var texList []Texture
 				aboveGroundCount := 0
-
 				for i := 1; i <= 3; i++ {
 					if l.Get(x, y-i) == LevelGround {
 						aboveGroundCount++
@@ -98,7 +99,6 @@ func (l *Level) Build(g *Game) []Renderable {
 						break
 					}
 				}
-
 				if aboveGroundCount == 3 {
 					randomNumber := rand.Intn(30) + 1
 					if randomNumber >= 1 && randomNumber <= 19 {
@@ -148,13 +148,11 @@ func (l *Level) Build(g *Game) []Renderable {
 			l.player.AppendGround(ground)
 		}
 	}
-	loseText := NewText(g.font.LoadFont(TusjF), "You Lost\nTHE END", 24*g.engine.Scale(), 0.5, 0.4)
-	winText := NewText(g.font.LoadFont(TusjF), "You Won\nTHE END", 24*g.engine.Scale(), 0.5, 0.4)
-
 	l.res = append(l.res, l.goal)
 
 	l.res = append(l.res, l.player)
-	l.res = append(l.res, NewGoal(l.player, loseText, winText, l.goal, g.engine.Scale()))
+
+	l.res = append(l.res, NewGoal(l.player, l.goal, g.engine.Scale(), func() { g.engine.ChangePlayerLvL(2) }, func() { g.engine.ChangeStage(0) }))
 
 	return l.res
 }
@@ -218,4 +216,56 @@ func (l *Level) GroundGroup(x, y int, cell Rect) (float64, float64) {
 	}
 
 	return min, max
+}
+
+func (l *Level) NewPlayerObj(g *Game, cell Rect) *Player {
+	mortyCell := cell
+	mortyCell.Right *= 1.05
+
+	anim := NewAnimationGroup(
+		l.MustParseAnimation(g, MortyVanillaT, assets.MortyVanillaAtlas),
+		l.MustParseAnimation(g, MortyJumpingT, assets.MortyJumpingAtlas),
+		l.MustParseAnimation(g, MortyWalkingT, assets.MortyWalkingAtlas),
+		l.MustParseAnimation(g, MortyMeditatingT, assets.MortyMeditatingAtlas),
+		l.MustParseAnimation(g, MortySadFulT, assets.MortySadFulAtlas),
+		l.MustParseAnimation(g, MortyJoyFulT, assets.MortyJoyFulAtlas),
+	)
+
+	const (
+		Idle = iota
+		Jumping
+		Walking
+		Meditating
+		SadFul
+		JoyFul
+	)
+
+	p := NewPlayer(anim, mortyCell.Scale(g.engine.Scale()), g.engine.Scale())
+
+	p.onMovement = func() {
+		anim.idx = Walking
+	}
+
+	p.onJump = func() {
+		anim.idx = Jumping
+	}
+
+	p.onIdle = func() {
+		anim.idx = Idle
+	}
+
+	p.onBoring = func() {
+		anim.idx = Meditating
+	}
+
+	return p
+}
+
+func (l *Level) MustParseAnimation(g *Game, id Texture, xml []byte) *TextureAnimation {
+	atl, err := ParseTextureAtlas(bytes.NewReader(xml))
+	if err != nil {
+		panic(fmt.Errorf("invalid state by parsing texture atlas %w", err))
+	}
+
+	return NewTextureAnimation(g.texture.LoadTexture(id), atl, 30)
 }

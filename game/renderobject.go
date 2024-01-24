@@ -24,15 +24,16 @@ type RenderObject struct {
 	Position Vec
 	pivot    Vec
 	Scale    Vec
-	Texture  *ebiten.Image
+	Texture  Drawable
 	rotation degree
 }
 
-func NewObject(texture *ebiten.Image) *RenderObject {
+func NewObject(texture Drawable) *RenderObject {
+	x, y := texture.Size()
 	r := &RenderObject{
 		pivot: Vec{
-			x: -float64(texture.Bounds().Dx()) / 2,
-			y: -float64(texture.Bounds().Dy()) / 2,
+			x: -float64(x) / 2,
+			y: -float64(y) / 2,
 		},
 		Texture: texture,
 		Scale: Vec{
@@ -51,7 +52,7 @@ func (r *RenderObject) Draw(dst *Canvas) {
 	op.GeoM.Scale(r.Scale.x, r.Scale.y)
 	op.GeoM.Rotate(r.rotation.Rad())
 	op.GeoM.Translate(r.Position.x, r.Position.y)
-	dst.DrawImage(r.Texture, op)
+	r.Draw(dst)
 }
 
 func (r *RenderObject) Layout(w, h float64) {

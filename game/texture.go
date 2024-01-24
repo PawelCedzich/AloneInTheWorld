@@ -33,6 +33,7 @@ const (
 	BackgroundTownT
 	BackgroundTownFrontT
 	ButtonStartT
+	ButtonSaveT
 	ButtonSettingsT
 	ButtonContinueT
 	ButtonExitT
@@ -41,6 +42,12 @@ const (
 	ButtonOnT
 	ButtonOffT
 	CharacterT
+	MortyVanillaT
+	MortyJumpingT
+	MortyMeditatingT
+	MortyWalkingT
+	MortyJoyFulT
+	MortySadFulT
 )
 
 type TextureManager struct {
